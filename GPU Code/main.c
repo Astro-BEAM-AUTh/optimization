@@ -1,72 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "var_type_def.h"
+#include "GPU_Kernel_Calls.cuh"
+#include "input_methods.h"
 
 #define VEC_LENGTH 1024
 #define NUM_FRAMES 100000
 
-// Custom type for complex input
-typedef struct {
-    float re;
-    float im;
-} complex_float;
-
-// Input methods
-typedef enum {
-    INPUT_FILE,
-    INPUT_SDR,
-    INPUT_SYNTHETIC
-} input_mode_t;
-
-size_t read_complex_dat_file(const char *filename, complex_float *buffer, size_t max_samples)
-{
-    FILE *fp = fopen(filename, "rb");
-
-    if (fp == NULL)
-    {
-        printf("Could not open input file: %s\n", filename);
-        return 0;
-    }
-
-    size_t samples_read = fread(buffer, sizeof(complex_float), max_samples, fp);
-    fclose(fp);
-    return samples_read;
-}
-
-size_t read_complex_sdr(complex_float *buffer, size_t max_samples)
-{
-    printf("SDR input is not implemented yet.\n");
-    return 0;
-}
-
-
-void add_blocks(const complex_float *input, const float *window0, const float *window1, 
-                             const float *window2, const float *window3, complex_float *output, int num_frames) 
-{
-    for (int frame = 0; frame < num_frames; frame++) 
-    {
-        int out_base = frame * VEC_LENGTH;
-        int b0_base = (frame + 0) * VEC_LENGTH;
-        int b1_base = (frame + 1) * VEC_LENGTH;
-        int b2_base = (frame + 2) * VEC_LENGTH;
-        int b3_base = (frame + 3) * VEC_LENGTH;
-
-        for (int i = 0; i < VEC_LENGTH; i++) 
-        {
-            output[out_base + i].re =
-                input[b0_base + i].re * window0[i] +
-                input[b1_base + i].re * window1[i] +
-                input[b2_base + i].re * window2[i] +
-                input[b3_base + i].re * window3[i];
-
-            output[out_base + i].im =
-                input[b0_base + i].im * window0[i] +
-                input[b1_base + i].im * window1[i] +
-                input[b2_base + i].im * window2[i] +
-                input[b3_base + i].im * window3[i];
-        }
-    }
-}
 
 int main(int argc, char **argv) 
 {
@@ -148,11 +89,10 @@ int main(int argc, char **argv)
         window2[i] = 0.25f;
         window3[i] = 0.25f;
     }
-    add_blocks(input, window0, window1, window2, window3, output, NUM_FRAMES);
+    kernels_launch(input, window0, window1, window2, window3, output, input_size, output_size,
+                   window_size, NUM_FRAMES);
 
-    //for (int i = 0; i < 5; i++) 
-      //  printf("output[%d] = %f + %fi\n", i, output[i].re, output[i].im);
-
+    
 
     
     // Memory cleanup
