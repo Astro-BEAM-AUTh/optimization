@@ -2,7 +2,7 @@
 
 ## Main pipeline structure
 
-### CPU part
+## CPU part
 .dat file/synthetic data/SDR input => complex_float input buffer =>
 
 ### => data tranfser from CPU to GPU =>
