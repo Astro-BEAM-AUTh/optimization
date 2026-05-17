@@ -14,11 +14,14 @@ static void cudaErrorCheck(cudaError_t err, const char* msg)
 	}
 }
 
-void kernels_launch(const complex_float *input, const float *window0, const float *window1, const float *window2, 
-                    const float *window3, complex_float *output, const size_t input_size, 
+
+
+
+void kernels_launch(const complex_float* input, const float* window0, const float* window1, const float* window2, 
+                    const float* window3, float* output, const size_t input_size, 
                     const size_t output_size, const size_t window_size, const int NUM_FRAMES)
 {
-    complex_float* d_input, *d_window_sum_output;
+    complex_float* d_input, * d_window_sum_output;
     cudaErrorCheck(cudaMalloc((void**)&d_input, input_size), "d_input malloc");
     cudaErrorCheck(cudaMalloc((void**)&d_window_sum_output, output_size), "d_window_sum_output malloc");
 

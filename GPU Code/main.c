@@ -13,11 +13,11 @@ int main(int argc, char **argv)
 {
     int input_vectors = NUM_FRAMES + 3;
     size_t input_size = input_vectors * VEC_LENGTH * sizeof(complex_float);
-    size_t output_size = NUM_FRAMES * VEC_LENGTH * sizeof(complex_float);
+    size_t output_size = NUM_FRAMES * VEC_LENGTH * sizeof(float);
     size_t window_size = VEC_LENGTH * sizeof(float);
 
     complex_float *input = malloc(input_size);
-    complex_float *output = malloc(output_size);
+    float *output = malloc(output_size);
     float *window0 = malloc(window_size);
     float *window1 = malloc(window_size);
     float *window2 = malloc(window_size);
@@ -55,10 +55,10 @@ int main(int argc, char **argv)
 
         if (samples_read < total_input_samples)
         {
-            for (size_t i = 0; i < total_input_samples; i++)
+            for (size_t i = samples_read; i < total_input_samples; i++)
             {
-                input[i].re = (float)i * 0.000f;
-                input[i].im = (float)i * 0.000f;
+                input[i].re = 0.0f;
+                input[i].im = 0.0f;
             }
         }
     } else if (mode == INPUT_SDR)
@@ -67,18 +67,18 @@ int main(int argc, char **argv)
 
         if (samples_read < total_input_samples)
         {
-            for (size_t i = 0; i < total_input_samples; i++)
+            for (size_t i = samples_read; i < total_input_samples; i++)
             {
-                input[i].re = (float)i * 0.000f;
-                input[i].im = (float)i * 0.000f;
+                input[i].re = 0.0f;
+                input[i].im = 0.0f;
             }
         }
     } else
     {
         for (size_t i = 0; i < total_input_samples; i++)
         {
-            input[i].re = (float)i * 0.001f;
-            input[i].im = (float)i * 0.002f;
+            input[i].re = 0.0f;
+            input[i].im = 0.0f;
         }
     }
 
